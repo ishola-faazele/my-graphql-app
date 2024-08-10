@@ -143,10 +143,6 @@ const TransferEventsTable: React.FC<{ data: TransferEvent[] }> = ({ data }) => (
             <TableCell>From</TableCell>
             <TableCell>To</TableCell>
             <TableCell align="right">Value</TableCell>
-            {data.some(event => event.transferType) && (
-              <TableCell>Transfer Type</TableCell>
-            )}
-            <TableCell>Value</TableCell>
           </TableRow>
         </StyledTableHead>
         <TableBody>
