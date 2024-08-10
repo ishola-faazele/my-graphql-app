@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { 
   Container, 
@@ -14,7 +14,9 @@ import {
   Box,
   Tabs,
   Tab,
-  Alert
+  Alert,
+  TextField,
+  Button
 } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -53,12 +55,12 @@ const GET_TRANSFER_EVENTS_PAGINATED = gql`
 `;
 
 const GET_TRANSFER_EVENTS_LOGICAL = gql`
-  query GetTransferEventsLogical {
+  query GetTransferEventsLogical($from: Bytes!, $value: BigInt!) {
     transferEvents(
       where: {
         and: [
-          { value_gt: "100000000000000000" },
-          { from: "0x4d02af17a29cda77416a1f60eae9092bb6d9c026" }
+          { value_gt: $value },
+          { from: $from }
         ]
       }
     ) {
@@ -70,7 +72,6 @@ const GET_TRANSFER_EVENTS_LOGICAL = gql`
     }
   }
 `;
-
 
 // Styled components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -90,6 +91,7 @@ interface TransferEvent {
   from: string;
   to: string;
   value: string;
+  transferType?: string;
 }
 
 interface QueryResult {
@@ -106,6 +108,7 @@ const TransferEventsTable: React.FC<{ data: TransferEvent[] }> = ({ data }) => (
             <TableCell>From</TableCell>
             <TableCell>To</TableCell>
             <TableCell align="right">Value</TableCell>
+            <TableCell>Transfer Type</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -114,6 +117,7 @@ const TransferEventsTable: React.FC<{ data: TransferEvent[] }> = ({ data }) => (
               <TableCell>{event.from}</TableCell>
               <TableCell>{event.to}</TableCell>
               <TableCell align="right">{event.value}</TableCell>
+              <TableCell>{event.transferType}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -125,6 +129,8 @@ const TransferEventsTable: React.FC<{ data: TransferEvent[] }> = ({ data }) => (
 // Create a component to fetch and display data
 const TransferEvents: React.FC = () => {
   const [tabValue, setTabValue] = React.useState(0);
+  const [accountAddress, setAccountAddress] = useState("");
+  const [minValue, setMinValue] = useState("");
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -135,12 +141,21 @@ const TransferEvents: React.FC = () => {
   const { loading: loadingPaginated, error: errorPaginated, data: dataPaginated } = useQuery<QueryResult>(GET_TRANSFER_EVENTS_PAGINATED, {
     variables: { skip: 0, first: 10 }
   });
-  const { loading: loadingLogical, error: errorLogical, data: dataLogical } = useQuery<QueryResult>(GET_TRANSFER_EVENTS_LOGICAL);
+  const { loading: loadingLogical, error: errorLogical, data: dataLogical, refetch: refetchLogical } = useQuery<QueryResult>(GET_TRANSFER_EVENTS_LOGICAL, {
+    variables: { from: accountAddress, value: minValue },
+    skip: !accountAddress || !minValue // Skip this query until we have both inputs
+  });
+
+  const handleLogicalSearch = () => {
+    if (accountAddress && minValue) {
+      refetchLogical({ from: accountAddress, value: minValue });
+    }
+  };
 
   const renderContent = (loading: boolean, error: any, data: QueryResult | undefined) => {
     if (loading) return <LoadingContainer><CircularProgress /></LoadingContainer>;
     if (error) return <Alert severity="error">Error: {error.message}</Alert>;
-    if (!data) return <Alert severity="info">No data available</Alert>;
+    if (!data || data.transferEvents.length === 0) return <Alert severity="info">No data available</Alert>;
     return <TransferEventsTable data={data.transferEvents} />;
   };
 
@@ -191,6 +206,25 @@ const TransferEvents: React.FC = () => {
           <Typography variant="h4" component="h2" gutterBottom>
             Logical Operators
           </Typography>
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              label="Account Address"
+              value={accountAddress}
+              onChange={(e) => setAccountAddress(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Minimum Value"
+              value={minValue}
+              onChange={(e) => setMinValue(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <Button variant="contained" onClick={handleLogicalSearch} sx={{ mt: 1 }}>
+              Search
+            </Button>
+          </Box>
           {renderContent(loadingLogical, errorLogical, dataLogical)}
         </>
       )}
