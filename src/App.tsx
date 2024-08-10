@@ -79,7 +79,6 @@ const GET_TRANSFER_EVENTS_LOGICAL = gql`
       from
       to
       value
-      transferType
     }
   }
 `;
