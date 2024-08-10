@@ -54,11 +54,19 @@ const GET_TRANSFER_EVENTS_PAGINATED = gql`
 
 const GET_TRANSFER_EVENTS_LOGICAL = gql`
   query GetTransferEventsLogical {
-    transferEvents(where: { _and: [{ value_gt: 100 }, { from: "0x4d02aF17A29cdA77416A1F60Eae9092BB6d9c026" }] }) {
+    transferEvents(
+      where: {
+        and: [
+          { value_gt: "100000000000000000" },
+          { from: "0x4d02af17a29cda77416a1f60eae9092bb6d9c026" }
+        ]
+      }
+    ) {
       id
       from
       to
       value
+      transferType
     }
   }
 `;
