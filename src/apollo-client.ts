@@ -2,7 +2,7 @@ import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 
 // Create an HTTP link to your GraphQL server
 const httpLink = new HttpLink({
-  uri: "https://your-graph-endpoint.com/graphql", // Replace with your GraphQL endpoint
+  uri: "https://api.studio.thegraph.com/query/84868/analytics-usdt/version/latest", // Replace with your GraphQL endpoint
 });
 
 // Create an Apollo Client instance

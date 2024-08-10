@@ -138,7 +138,7 @@ const TransferEvents: React.FC = () => {
   return (
     <Container maxWidth="lg">
       <Typography variant="h2" component="h1" gutterBottom>
-        Transfer Events
+        TokenTrackr
       </Typography>
 
       <StyledPaper>
