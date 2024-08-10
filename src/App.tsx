@@ -54,7 +54,7 @@ const GET_TRANSFER_EVENTS_PAGINATED = gql`
 
 const GET_TRANSFER_EVENTS_LOGICAL = gql`
   query GetTransferEventsLogical {
-    transferEvents(where: { _and: [{ value_gt: "1000" }, { from: "0x123..." }] }) {
+    transferEvents(where: { _and: [{ value_gt: 100 }, { from: "0x4d02aF17A29cdA77416A1F60Eae9092BB6d9c026" }] }) {
       id
       from
       to
@@ -62,6 +62,7 @@ const GET_TRANSFER_EVENTS_LOGICAL = gql`
     }
   }
 `;
+
 
 // Styled components
 const StyledPaper = styled(Paper)(({ theme }) => ({
