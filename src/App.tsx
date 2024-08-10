@@ -147,6 +147,7 @@ const TransferEventsTable: React.FC<{ data: TransferEvent[] }> = ({ data }) => (
             {data.some(event => event.transferType) && (
               <TableCell>Transfer Type</TableCell>
             )}
+            <TableCell>Value</TableCell>
           </TableRow>
         </StyledTableHead>
         <TableBody>
